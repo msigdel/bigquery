@@ -1,0 +1,54 @@
+****************************
+Set up instructions for processing BigQuery using python. 
+The instructions were tested on Windows but should work in other systems as well.
+****************************
+
+1) Install Python2.7.x (https://www.python.org/downloads/)
+Note that we should install Python2.7 version not the Python3.5. Let it install into the default C:\Python27 directory.
+
+2) Install Google Cloud SDK (https://cloud.google.com/sdk/docs/quickstart-windows). 
+
+3) Setup google cloud account and default project with the following command on command prompt. This will open up a page prompting for google account and authorization access.
+
+	C:\>gcloud auth login
+
+4) Setup/Enable default google cloud authentication for your system
+
+    C:\>gcloud auth application-default login
+
+5) Install google-api-python-client.
+
+	C:\Python27\Scripts> easy_install --upgrade google-api-python-client
+
+6) Install bigquery-python client.
+
+	C:\Python27\Scripts\easy_install bigquery-python
+	
+
+*********************************
+Sample program to test the set up
+*********************************
+
+Below is sample python program that uses bigquery-python api to get results from a bigquery table. 
+
+#Import required libraries
+from bigquery import get_client
+from oauth2client.client import GoogleCredentials
+
+#Set up API service using default credentials
+credentials = GoogleCredentials.get_application_default()
+project_id = <<project_id>>
+client = get_client(project_id, credentials=credentials)
+
+#Prepare the query string. Replace the <<dataset>> with your dataset
+query_str = "select * from <<dataset>>.__TABLES__"
+
+job_id, _results = client.query(query_str)
+
+# Check if the query has finished running.
+complete, row_count = client.check_job(job_id)
+
+# Retrieve the results.
+results = client.get_query_rows(job_id)
+
+print results
